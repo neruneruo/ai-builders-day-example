@@ -4,13 +4,14 @@ SHELL := bash
 MAKEFLAGS += --no-builtin-rules
 .SILENT:
 
-PYTHON_DIRS="./script/agents"
+PYTHON_DIRS="./agents ./ui"
 TERRAFORM_DIRS="./terraform"
 CLEAN_EXCLUDES ?= \
 	-e terraform.tfstate \
 	-e terraform.tfstate.backup
 
 terraform:
+	. credentials.sh > /dev/null
 	cd terraform
 	terraform fmt
 	terraform $(ARG)
@@ -26,8 +27,8 @@ agent-local-run:
 .PHONY: agent-local-run
 
 streamlit-local-run:
-	cd script/interface
-	PYTHONPATH=src python -m interface
+	cd ./ui
+	PYTHONPATH=src python -m ui
 .PHONY: streamlit-local-run
 
 ################################################################################
@@ -54,14 +55,16 @@ setup-uv:
 	fi
 
 	echo "[INFO] Python target dirs:"
-	printf " - %s\n" $(PYTHON_DIRS)
-	for d in $(PYTHON_DIRS); do
+	for d in "$(PYTHON_DIRS)"; do
+		printf " - %s\n" $$d
+	done
+	org_dir=$$(pwd);
+	for d in "$(PYTHON_DIRS)"; do
 		echo "[INFO] cd $$d"
 		cd $$d
 		echo "[INFO] uv sync (pyproject.toml)"
 		uv sync
-		echo "[INFO] uv pip install -r requirements.txt"
-		uv pip install -r requirements.txt
+		cd $$org_dir
 	done
 .PHONY: setup-uv
 
@@ -72,10 +75,14 @@ setup-terraform:
 	fi
 
 	echo "[INFO] Terraform target dirs:"
-	printf " - %s\n" $(TERRAFORM_DIRS)
+	for d in "$(TERRAFORM_DIRS)"; do
+		printf " - %s\n" $$d
+	done
+	org_dir=$$(pwd);
 	for d in $(TERRAFORM_DIRS); do
 		echo "[INFO] terraform -chdir=$$d init -upgrade"
 		terraform -chdir="$$d" init -upgrade -input=false || true
+		cd $$org_dir
 	done
 .PHONY: setup-terraform
 
