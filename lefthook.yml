@@ -1,0 +1,9 @@
+pre-commit:
+  parallel: true
+  commands:
+    trivy:
+      run: > 
+        trivy fs --scanners secret --exit-code 1
+          --skip-dirs .venv --skip-dirs node_modules --skip-dirs .git --skip-dirs "**/.terraform"
+          --skip-files .env
+          .

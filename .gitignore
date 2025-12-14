@@ -1,0 +1,21 @@
+# Terraform directories and files
+.terraform/
+terraform.tfstate
+terraform.tfstate.backup
+.terraform.tfstate.lock.info
+.terraform.lock.hcl
+
+# Python directories and files
+.env
+.bedrock_agentcore.yaml
+*.egg-info/
+*.egg
+__pycache__/
+*.pyc
+.venv/
+tests/_out/
+
+# My Application directories and files
+env.sh
+credentials.sh
+secrets.toml

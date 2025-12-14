@@ -1,0 +1,17 @@
+version: "3.9"
+services:
+  agentcore:
+    image: agentcore-local
+    ports:
+      - "8080:8080"
+    environment:
+      - AWS_REGION=${AWS_REGION:-us-east-1}
+      - AWS_SECRET_ACCESS_KEY
+      - AWS_ACCESS_KEY_ID
+      - AWS_SESSION_TOKEN
+      - AWS_BEDROCK_REGION
+      - AWS_BEDROCK_MODEL
+      - AWS_BEDROCK_AGENTCORE_MEMORY_ID
+      - STRANDS_LOG_LEVEL
+      - AGENT_LOG_LEVEL
+    entrypoint: ["python", "-m", "agents"]
